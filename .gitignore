@@ -1,0 +1,30 @@
+# Start Generation Here
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore environment variable files
+.env
+
+# Ignore log files
+*.log
+
+# Ignore local configuration files
+*.local
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+# End Generation Here
+
+# Ignore all files in the .venv directory
+.venv/
+
+# ignore chroma db
+chroma_db/
+
+# ignore rag_env
+rag-env/
+
+# ignore documents
+documents/
