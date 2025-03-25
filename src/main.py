@@ -14,7 +14,6 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting up RAG system...")
-    # Optional: Pre-load documents
     embedding_service = EmbeddingService(OLLAMA_HOST)
     retrieval_service = RetrievalService(embedding_service)
     retrieval_service.load_documents()
@@ -23,7 +22,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="RAG System API",
-    description="A Retrieval-Augmented Generation system using Ollama and Chroma.",
+    description="A Retrieval-Augmented Generation system with file management.",
     version="1.0.0",
     lifespan=lifespan
 )
