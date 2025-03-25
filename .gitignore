@@ -28,3 +28,6 @@ rag-env/
 
 # ignore documents
 documents/
+
+# ignore chache
+cache/

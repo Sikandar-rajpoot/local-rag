@@ -8,25 +8,19 @@ from src.services.embedding import EmbeddingService
 from src.utils.logger import setup_logger
 
 logger = setup_logger()
-
-# Load environment variables
 load_dotenv()
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
-# Lifespan event handler
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Load documents into Chroma
+    logger.info("Starting up RAG system...")
+    # Optional: Pre-load documents
     embedding_service = EmbeddingService(OLLAMA_HOST)
     retrieval_service = RetrievalService(embedding_service)
-    if retrieval_service.collection.count() == 0:
-        logger.info("Loading documents on startup...")
-        retrieval_service.load_documents()
-    yield  # Application runs here
-    # Shutdown: Add cleanup if needed (optional)
+    retrieval_service.load_documents()
+    yield
     logger.info("Shutting down...")
 
-# Initialize FastAPI app with lifespan
 app = FastAPI(
     title="RAG System API",
     description="A Retrieval-Augmented Generation system using Ollama and Chroma.",
@@ -34,7 +28,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Include routes
 app.include_router(rag_router)
 
 if __name__ == "__main__":
