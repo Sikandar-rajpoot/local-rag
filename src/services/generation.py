@@ -13,7 +13,7 @@ class GenerationService:
             "You are a helpful assistant. Use the following context to answer the question concisely and accurately.\n"
             f"Context: {context}\n"
             f"Question: {query}\n"
-            "Answer in 1-2 sentences:"
+             "Answer in 1-2 sentences:"
         )
         response = self.client.generate(model=self.model, prompt=prompt)
         return response["response"]

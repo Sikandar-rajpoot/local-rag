@@ -14,3 +14,11 @@ class QueryResponse(BaseModel):
 
 class AutomationResponse(BaseModel):
     result: str
+
+class HistoryEntry(BaseModel):
+    id: int
+    type: str
+    query: str
+    file_path: str
+    response: str
+    timestamp: str

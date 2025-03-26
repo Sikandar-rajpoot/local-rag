@@ -6,3 +6,4 @@ langchain==0.1.13
 ollama==0.1.7
 PyPDF2==3.0.1
 python-docx==1.1.0
+streamlit==1.36.0

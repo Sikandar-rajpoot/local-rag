@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from src.schema.rag import QueryRequest, QueryResponse, AutomationRequest, AutomationResponse
+from src.schema.rag import QueryRequest, AutomationRequest, QueryResponse, AutomationResponse, HistoryEntry
 from src.services.embedding import EmbeddingService
 from src.services.retrieval import RetrievalService
 from src.services.generation import GenerationService
@@ -8,10 +8,13 @@ from src.utils.logger import setup_logger
 from dotenv import load_dotenv
 import os
 import json
+import sqlite3
+from typing import List
 
 load_dotenv()
 logger = setup_logger()
 router = APIRouter(prefix="/rag", tags=["rag"])
+DB_PATH = os.path.join("db", "history.db")
 
 def get_services():
     ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
@@ -20,6 +23,21 @@ def get_services():
     generation_service = GenerationService(ollama_host)
     file_manager = FileManager()
     return embedding_service, retrieval_service, generation_service, file_manager
+
+def store_interaction(interaction_type: str, query: str, file_path: str, response: str):
+    """Store interaction in the database with type."""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO history (type, query, file_path, response) VALUES (?, ?, ?, ?)",
+            (interaction_type, query, file_path, response)
+        )
+        conn.commit()
+        conn.close()
+        logger.info(f"Stored {interaction_type} interaction: {query}")
+    except Exception as e:
+        logger.error(f"Failed to store {interaction_type} interaction: {str(e)}")
 
 @router.post("/query", response_model=QueryResponse)
 async def query_rag(
@@ -45,6 +63,10 @@ async def query_rag(
     context = " ".join(retrieved_docs)
     response = generation_service.generate(query, context)
     logger.info(f"Generated response: {response}")
+
+    # Store query interaction
+    store_interaction("query", query, file_path, response)
+
     return {
         "response": response,
         "context": retrieved_docs,
@@ -63,8 +85,6 @@ async def automate_task(
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
     logger.info(f"Processing automation prompt: {prompt}")
-
-    # LLM instruction parsing prompt
     instruction_prompt = (
         "You are a file management assistant. Parse the following user prompt and return ONLY a valid JSON string "
         "with 'task' and 'args'. Do not include any additional text, explanations, or comments. "
@@ -88,4 +108,28 @@ async def automate_task(
 
     result = file_manager.execute_task(task, args)
     logger.info(f"Automation result: {result}")
+
+    # Store automation interaction (use prompt as query, extract file_path if present)
+    file_path = args.get("file_path") or args.get("src_path") or args.get("dir_path") or "N/A"
+    store_interaction("automation", prompt, file_path, result)
+
     return {"result": result}
+
+@router.get("/history", response_model=List[HistoryEntry])
+async def get_history():
+    """Fetch all interaction history from the database."""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, type, query, file_path, response, timestamp FROM history ORDER BY timestamp DESC")
+        rows = cursor.fetchall()
+        conn.close()
+        history = [
+            {"id": row[0], "type": row[1], "query": row[2], "file_path": row[3], "response": row[4], "timestamp": row[5]}
+            for row in rows
+        ]
+        logger.info(f"Fetched {len(history)} history entries")
+        return history
+    except Exception as e:
+        logger.error(f"Failed to fetch history: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch history")
