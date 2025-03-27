@@ -14,30 +14,42 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 DB_PATH = os.path.join("db", "history.db")
 
 def init_db():
-    """Initialize SQLite database for interaction history."""
+    """Initialize SQLite database with history and files tables if they don't exist."""
     os.makedirs("db", exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    # Drop existing table to update schema (for simplicity; in production, use migrations)
-    cursor.execute("DROP TABLE IF EXISTS history")
+    
+    # Create history table if it doesn't exist
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            type TEXT NOT NULL,  -- 'query' or 'automation'
+            type TEXT NOT NULL,
             query TEXT NOT NULL,
-            file_path TEXT,
+            file_paths TEXT,
             response TEXT,
+            details TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    
+    # Create files table if it doesn't exist
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_path TEXT UNIQUE NOT NULL,
+            content TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
     conn.commit()
     conn.close()
-    logger.info("Initialized SQLite database for history with type column")
+    logger.info("Ensured SQLite database tables exist for permanent history and files")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting up RAG system...")
-    init_db()  # Initialize database
+    init_db()  # Initialize database without dropping tables
     embedding_service = EmbeddingService(OLLAMA_HOST)
     retrieval_service = RetrievalService(embedding_service)
     retrieval_service.load_documents()
@@ -46,7 +58,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="RAG System API",
-    description="A Retrieval-Augmented Generation system with file management and history.",
+    description="A Retrieval-Augmented Generation system with file management and permanent history.",
     version="1.0.0",
     lifespan=lifespan
 )

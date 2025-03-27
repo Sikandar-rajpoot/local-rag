@@ -1,5 +1,6 @@
 import os
 import shutil
+import glob
 from src.utils.logger import setup_logger
 from dotenv import load_dotenv
 
@@ -8,19 +9,16 @@ logger = setup_logger()
 
 class FileManager:
     def __init__(self):
-        # Optional whitelist of allowed directories from .env
         allowed_dirs = os.getenv("ALLOWED_DIRS", "").split(",")
         self.allowed_dirs = [os.path.abspath(d.strip()) for d in allowed_dirs if d.strip()] if allowed_dirs else None
 
     def _is_path_allowed(self, path: str) -> bool:
-        """Check if the path is allowed based on the whitelist (if set)."""
         if not self.allowed_dirs:
-            return True  # No restrictions if whitelist is not set
+            return True
         abs_path = os.path.abspath(path)
         return any(abs_path.startswith(allowed_dir) for allowed_dir in self.allowed_dirs)
 
     def create_file(self, file_path: str, content: str = "") -> bool:
-        """Create a file at the specified path with optional content."""
         if not self._is_path_allowed(file_path):
             logger.error(f"Path not allowed: {file_path}")
             return False
@@ -35,7 +33,6 @@ class FileManager:
             return False
 
     def read_file(self, file_path: str) -> str:
-        """Read content from a file at the specified path."""
         if not self._is_path_allowed(file_path):
             logger.error(f"Path not allowed: {file_path}")
             return ""
@@ -52,7 +49,6 @@ class FileManager:
             return ""
 
     def update_file(self, file_path: str, content: str) -> bool:
-        """Update (overwrite) a file's content at the specified path."""
         if not self._is_path_allowed(file_path):
             logger.error(f"Path not allowed: {file_path}")
             return False
@@ -67,7 +63,6 @@ class FileManager:
             return False
 
     def delete_file(self, file_path: str) -> bool:
-        """Delete a file at the specified path."""
         if not self._is_path_allowed(file_path):
             logger.error(f"Path not allowed: {file_path}")
             return False
@@ -83,7 +78,6 @@ class FileManager:
             return False
 
     def create_directory(self, dir_path: str) -> bool:
-        """Create a directory at the specified path."""
         if not self._is_path_allowed(dir_path):
             logger.error(f"Path not allowed: {dir_path}")
             return False
@@ -96,7 +90,6 @@ class FileManager:
             return False
 
     def move_file(self, src_path: str, dest_dir: str) -> bool:
-        """Move a file from src_path to dest_dir."""
         if not (self._is_path_allowed(src_path) and self._is_path_allowed(dest_dir)):
             logger.error(f"Path not allowed: {src_path} or {dest_dir}")
             return False
@@ -114,7 +107,6 @@ class FileManager:
             return False
 
     def search_files(self, dir_path: str, pattern: str) -> list[str]:
-        """Search for files matching a pattern in the specified directory."""
         if not self._is_path_allowed(dir_path):
             logger.error(f"Path not allowed: {dir_path}")
             return []
@@ -122,7 +114,9 @@ class FileManager:
             logger.error(f"Directory not found: {dir_path}")
             return []
         try:
-            files = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if pattern in f or f.endswith(pattern)]
+            # Use glob for pattern matching (e.g., "*.txt")
+            files = glob.glob(os.path.join(dir_path, pattern))
+            files = [f for f in files if os.path.isfile(f)]  # Filter to files only
             logger.info(f"Found files matching {pattern} in {dir_path}: {files}")
             return files
         except Exception as e:
@@ -130,7 +124,6 @@ class FileManager:
             return []
 
     def execute_task(self, task: str, args: dict) -> str:
-        """Execute a task based on LLM instructions."""
         task = task.lower()
         if task == "create_file":
             return "Success" if self.create_file(args.get("file_path", ""), args.get("content", "")) else "Failed"

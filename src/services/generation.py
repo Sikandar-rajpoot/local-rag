@@ -1,19 +1,18 @@
-from ollama import Client as OllamaClient
+import ollama
 from src.utils.logger import setup_logger
 
 logger = setup_logger()
 
 class GenerationService:
-    def __init__(self, host: str):
-        self.client = OllamaClient(host=host)
-        self.model = "mistral" # Using Mistral model instead of Llama2
+    def __init__(self, ollama_host: str, model: str = "mistral"):
+        self.client = ollama.Client(host=ollama_host)
+        self.model = model
 
     def generate(self, query: str, context: str) -> str:
-        prompt = (
-            "You are a helpful assistant. Use the following context to answer the question concisely and accurately.\n"
-            f"Context: {context}\n"
-            f"Question: {query}\n"
-             "Answer in 1-2 sentences:"
-        )
-        response = self.client.generate(model=self.model, prompt=prompt)
-        return response["response"]
+        prompt = f"Context: {context}\n\nQuery: {query}\n\nAnswer:"
+        try:
+            response = self.client.generate(model=self.model, prompt=prompt)
+            return response["response"].strip()
+        except Exception as e:
+            logger.error(f"Generation failed: {str(e)}")
+            return "Error generating response"
