@@ -8,175 +8,6 @@ import tempfile
 # API base URL
 BASE_URL = "http://localhost:8000/rag"
 
-# Custom CSS for enhanced styling
-st.markdown("""
-    <style>
-    /* Use Streamlit theme variables */
-    :root {
-        --primary-color: #3b5998; /* Default */
-        --secondary-color: #2a4373;
-        --background-light: rgba(255, 255, 255, 0.9);
-        --background-dark: rgba(18, 18, 18, 0.9);
-        --text-light: #111827;
-        --text-dark: #e5e7eb;
-        --border-light: #d1d5db;
-        --border-dark: #374151;
-    }
-
-    /* General Styling */
-    .stApp {
-        font-family: 'Poppins', sans-serif;
-        padding: 1rem;
-        color: var(--text-light);
-    }
-
-    /* Headings */
-    h1 {
-        text-align: center;
-        font-size: 2.5rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Tab Styling */
-    .stTab {
-        background: var(--background-light);
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
-        backdrop-filter: blur(4px);
-        margin-bottom: 2rem;
-        border: 1px solid var(--border-light);
-    }
-
-    /* Button Styling */
-    .stButton>button {
-        background: var(--primary-color);
-        color: #ffffff;
-        margin-top: 25px;
-        border: none;
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(59, 89, 152, 0.3);
-    }
-
-    .stButton>button:hover {
-        background: var(--secondary-color);
-        color: #ffffff;
-    }
-
-    .stButton>button:active {
-        box-shadow: 0 2px 10px rgba(59, 89, 152, 0.2);
-        color: #ffffff;
-    }
-
-    /* Inputs */
-    .stTextInput>label, .stTextArea>label {
-        color: var(--primary-color);
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-
-    .stTextInput>div>input, .stTextArea>div>textarea {
-        border: 1px solid var(--border-light);
-        border-radius: 8px;
-        background-color: #f9fafb;
-        padding: 0.6rem;
-        font-size: 1rem;
-    }
-
-    .stTextInput>div>input:focus, .stTextArea>div>textarea:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 8px rgba(59, 89, 152, 0.2);
-    }
-
-    /* Custom Containers */
-    .response-box {
-        background: linear-gradient(135deg, #d4fce3 0%, #c8e6c9 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        border: 1px solid #a5d6a7;
-        color: #1b5e20;
-        font-size: 1.1rem;
-        box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1);
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .context-box {
-        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        border: 1px solid #80deea;
-        color: #006064;
-        font-size: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 96, 100, 0.1);
-        margin-top: 1rem;
-        max-height: 250px;
-        overflow-y: auto;
-    }
-
-    .metadata-box {
-        background: linear-gradient(135deg, #ede7f6 0%, #d1c4e9 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        border: 1px solid #b39ddb;
-        color: #311b92;
-        font-size: 0.95rem;
-        box-shadow: 0 4px 12px rgba(49, 27, 146, 0.1);
-        margin-top: 1rem;
-        max-height: 250px;
-        overflow-y: auto;
-    }
-
-    /* Sidebar */
-    .css-1d391kg {
-        background: var(--background-light);
-        border-right: 1px solid var(--border-light);
-        padding: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    /* Dark Mode Overrides */
-    @media (prefers-color-scheme: dark) {
-        .stApp {
-            color: var(--text-dark);
-        }
-        .stTab, .css-1d391kg {
-            background: var(--background-dark);
-            border-color: var(--border-dark);
-        }
-        .stButton>button {
-            background: var(--primary-color);
-            color: #ffffff;
-        }
-        .stTextInput>div>input, .stTextArea>div>textarea {
-            background: #222;
-            border-color: var(--border-dark);
-            color: var(--text-dark);
-        }
-        .response-box {
-            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-            color: #e8f5e9;
-            border-color: #4caf50;
-        }
-        .context-box {
-            background: linear-gradient(135deg, #006064 0%, #00838f 100%);
-            color: #e0f7fa;
-            border-color: #26c6da;
-        }
-        .metadata-box {
-            background: linear-gradient(135deg, #311b92 0%, #5e35b1 100%);
-            color: #ede7f6;
-            border-color: #9575cd;
-        }
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 # Streamlit app
 st.title("RAG System Dashboard")
 
@@ -191,7 +22,16 @@ with tab1:
         with col1:
             query = st.text_input("Enter your query", key="query")
         with col2:
-            submit_query = st.button("Submit Query", key="submit_query")
+            submit_query = st.button("Submit Query", key="submit_query", 
+                                   help="Click to submit your query",
+                                   use_container_width=True)
+            st.markdown("""
+                <style>
+                    [data-testid="stButton"] {
+                        margin-top: 28px;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
         
         col_paths, col_upload = st.columns(2)
         with col_paths:
@@ -214,14 +54,35 @@ with tab1:
                 response.raise_for_status()
                 result = response.json()
                 st.subheader("Response:")
-                st.markdown(f"<div class='response-box'>{result['response']}</div>", unsafe_allow_html=True)
+                # Inline styling for response-box, theme-aware colors
+                html_response = (
+                    f"<div style='background: linear-gradient(135deg, #d4fce3 0%, #c8e6c9 100%) "
+                    f"{'background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"padding: 1.5rem; border-radius: 10px; border: 1px solid #a5d6a7 "
+                    f"{'border: 1px solid #4caf50' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"color: #1b5e20 {'color: #e8f5e9' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"font-size: 1.1rem; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1); "
+                    f"margin-top: 1rem; margin-bottom: 1rem; min-height: 400px; "
+                    f"font-family: Poppins, sans-serif;'>"
+                    f"{result['response']}</div>"
+                )
+                html(html_response, height=600, scrolling=True)
 
                 # Collapsible Context with Inline Styling
                 with st.expander("Context", expanded=True):
-                    context_html = "<div class='context-box' style='margin-top: 1rem;'>"
+                    context_html = (
+                        f"<div style='background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%) "
+                        f"{'background: linear-gradient(135deg, #006064 0%, #00838f 100%)' if st.get_option('theme.base') == 'dark' else ''}; "
+                        f"padding: 1.5rem; border-radius: 10px; border: 1px solid #80deea "
+                        f"{'border: 1px solid #26c6da' if st.get_option('theme.base') == 'dark' else ''}; "
+                        f"color: #006064 {'color: #e0f7fa' if st.get_option('theme.base') == 'dark' else ''}; "
+                        f"font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 96, 100, 0.1); "
+                        f"margin-top: 1rem; max-height: 250px; overflow-y: auto; "
+                        f"font-family: Poppins, sans-serif;'>"
+                    )
                     for i, ctx in enumerate(result["context"], 1):
                         context_html += (
-                            f"<p style='margin: 5px 0; padding: 8px;  background-color: rgba(255, 255, 255, 0.3); "
+                            f"<p style='margin: 5px 0; padding: 8px; background-color: rgba(255, 255, 255, 0.3); "
                             f"border-radius: 5px;'><strong>Chunk {i}:</strong> {ctx.replace('\n', '<br>')}</p>"
                         )
                     context_html += "</div>"
@@ -229,19 +90,27 @@ with tab1:
 
                 # Collapsible Metadata with Inline Styling
                 with st.expander("Metadata", expanded=True):
-                    meta_html = "<div class='metadata-box'><table style='width: 100%; border-collapse: collapse;'>"
-                    meta_html += (
-                        "<tr style='background-color: rgba(255, 255, 255, 0.4);'>"
-                        "<th style='padding: 8px; border: 1px solid #fff;'>File</th>"
-                        "<th style='padding: 8px; border: 1px solid #fff;'>Source</th>"
-                        "</tr>"
+                    meta_html = (
+                        f"<div style='background: linear-gradient(135deg, #ede7f6 0%, #d1c4e9 100%) "
+                        f"{'background: linear-gradient(135deg, #311b92 0%, #5e35b1 100%)' if st.get_option('theme.base') == 'dark' else ''}; "
+                        f"padding: 1.5rem; border-radius: 10px; border: 1px solid #b39ddb "
+                        f"{'border: 1px solid #9575cd' if st.get_option('theme.base') == 'dark' else ''}; "
+                        f"color: #311b92 {'color: #ede7f6' if st.get_option('theme.base') == 'dark' else ''}; "
+                        f"font-size: 0.95rem; box-shadow: 0 4px 12px rgba(49, 27, 146, 0.1); "
+                        f"margin-top: 1rem; max-height: 250px; overflow-y: auto; "
+                        f"font-family: Poppins, sans-serif;'>"
+                        f"<table style='width: 100%; border-collapse: collapse;'>"
+                        f"<tr style='background-color: rgba(255, 255, 255, 0.4);'>"
+                        f"<th style='padding: 8px; border: 1px solid #fff;'>File</th>"
+                        f"<th style='padding: 8px; border: 1px solid #fff;'>Source</th>"
+                        f"</tr>"
                     )
                     for meta in result["metadata"]:
                         meta_html += (
                             f"<tr style='background-color: rgba(255, 255, 255, 0.3);'>"
                             f"<td style='padding: 8px; border: 1px solid #fff;'>{meta['file']}</td>"
                             f"<td style='padding: 8px; border: 1px solid #fff;'>{meta['source']}</td>"
-                            "</tr>"
+                            f"</tr>"
                         )
                     meta_html += "</table></div>"
                     html(meta_html, height=250)
@@ -262,7 +131,16 @@ with tab2:
         with col1:
             prompt = st.text_input("Enter automation prompt", key="prompt")
         with col2:
-            execute_automation = st.button("Execute", key="execute_automation")
+            execute_automation = st.button("Execute", key="execute_automation",
+                                           help="Click to execute the automation prompt",
+                                           use_container_width=True)
+            st.markdown("""
+                <style>
+                    [data-testid="stButton"] {
+                        margin-top: 28px;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
         
         st.subheader("Search Files")
         col_dir, col_pattern = st.columns(2)
@@ -270,7 +148,16 @@ with tab2:
             search_dir = st.text_input("Directory to search", key="search_dir", value="D:/temp")
         with col_pattern:
             search_pattern = st.text_input("Search pattern (e.g., *.txt)", key="search_pattern", value="*")
-        search_button = st.button("Search", key="search_button")
+        search_button = st.button("Search", key="search_button",
+                                  help="Click to search for files",
+                                  use_container_width=True)
+        st.markdown("""
+            <style>
+                [data-testid="stButton"] {
+                    margin-top: 28px;
+                }
+            </style>
+            """, unsafe_allow_html=True)
         
         if search_button:
             search_prompt = f"Search for {search_pattern} in {search_dir}"
@@ -278,7 +165,17 @@ with tab2:
                 response = requests.post(f"{BASE_URL}/automate", json={"prompt": search_prompt})
                 response.raise_for_status()
                 result = response.json()
-                st.markdown(f"<div class='response-box'>Search Result: {result['result']}</div>", unsafe_allow_html=True)
+                result_html = (
+                    f"<div style='background: linear-gradient(135deg, #d4fce3 0%, #c8e6c9 100%) "
+                    f"{'background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"padding: 1.5rem; border-radius: 10px; border: 1px solid #a5d6a7 "
+                    f"{'border: 1px solid #4caf50' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"color: #1b5e20 {'color: #e8f5e9' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"font-size: 1.1rem; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1); "
+                    f"margin-top: 1rem; margin-bottom: 1rem; font-family: Poppins, sans-serif;'>"
+                    f"Search Result: {result['result']}</div>"
+                )
+                html(result_html, height=200)
             except requests.exceptions.RequestException as e:
                 st.error(f"Error: {str(e)}")
 
@@ -288,7 +185,17 @@ with tab2:
                 response.raise_for_status()
                 result = response.json()
                 st.subheader("Result:")
-                st.markdown(f"<div class='response-box'>{result['result']}</div>", unsafe_allow_html=True)
+                result_html = (
+                    f"<div style='background: linear-gradient(135deg, #d4fce3 0%, #c8e6c9 100%) "
+                    f"{'background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"padding: 1.5rem; border-radius: 10px; border: 1px solid #a5d6a7 "
+                    f"{'border: 1px solid #4caf50' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"color: #1b5e20 {'color: #e8f5e9' if st.get_option('theme.base') == 'dark' else ''}; "
+                    f"font-size: 1.1rem; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1); "
+                    f"margin-top: 1rem; margin-bottom: 1rem; font-family: Poppins, sans-serif;'>"
+                    f"{result['result']}</div>"
+                )
+                html(result_html, height=200)
             except requests.exceptions.RequestException as e:
                 st.error(f"Error: {str(e)}")
         elif execute_automation:
@@ -302,7 +209,16 @@ with tab3:
         with col_filter:
             filter_type = st.selectbox("Filter by Type", ["All", "Query", "Automation"], key="filter_type")
         with col_refresh:
-            refresh_history = st.button("Refresh History", key="refresh_history")
+            refresh_history = st.button("Refresh History", key="refresh_history",
+                                        help="Click to refresh the history",
+                                        use_container_width=True)
+            st.markdown("""
+                <style>
+                    [data-testid="stButton"] {
+                        margin-top: 28px;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
         
         if refresh_history:
             try:
@@ -316,7 +232,20 @@ with tab3:
                         with st.expander(f"{entry['type'].capitalize()} - {entry['timestamp']}", expanded=False):
                             st.markdown(f"**Query/Prompt:** {entry['query']}")
                             st.markdown(f"**File Paths:** {entry['file_paths']}")
-                            st.markdown(f"**Response:** {entry['response']}")
+                            # Process and render HTML response with inline styling
+                            response_html = (
+                                f"<div style='background: linear-gradient(135deg, #d4fce3 0%, #c8e6c9 100%) "
+                                f"{'background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)' if st.get_option('theme.base') == 'dark' else ''}; "
+                                f"padding: 1.5rem; border-radius: 10px; border: 1px solid #a5d6a7 "
+                                f"{'border: 1px solid #4caf50' if st.get_option('theme.base') == 'dark' else ''}; "
+                                f"color: #1b5e20 {'color: #e8f5e9' if st.get_option('theme.base') == 'dark' else ''}; "
+                                f"font-size: 1.1rem; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1); "
+                                f"margin-top: 1rem; margin-bottom: 1rem; min-height: 100px;"
+                                f"font-family: Poppins, sans-serif;'>"
+                                f"{entry['response']}</div>"
+                            )
+                            st.markdown("**Response:**")
+                            html(response_html, height=400, scrolling=True)
                             if entry["details"]:
                                 st.markdown(f"**Details:** {entry['details']}")
                 else:
