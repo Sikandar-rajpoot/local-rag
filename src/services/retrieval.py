@@ -114,7 +114,9 @@ class RetrievalService:
             return [], []
 
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500, chunk_overlap=50, separators=["\n\n", "\n", ". ", " ", ""]
+            chunk_size=2500,  # ≈ 400-450 words ≈ 500-675 tokens ≈ 1-1.5 pages
+            chunk_overlap=250,  # ≈ 40-50 words ≈ 50-75 tokens ≈ 0.5-1 page
+            separators=["\n\n", "\n", ". ", " ", ""]
         )
         chunks = splitter.split_text(text)
         if len(metadatas) > len(chunks):

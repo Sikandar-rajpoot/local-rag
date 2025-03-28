@@ -62,7 +62,7 @@ with tab1:
                     f"{'border: 1px solid #4caf50' if st.get_option('theme.base') == 'dark' else ''}; "
                     f"color: #1b5e20 {'color: #e8f5e9' if st.get_option('theme.base') == 'dark' else ''}; "
                     f"font-size: 1.1rem; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1); "
-                    f"margin-top: 1rem; margin-bottom: 1rem; min-height: 400px; "
+                    f"margin-top: 1rem; margin-bottom: 1rem; max-height: 600px; "
                     f"font-family: Poppins, sans-serif;'>"
                     f"{result['response']}</div>"
                 )
@@ -77,7 +77,7 @@ with tab1:
                         f"{'border: 1px solid #26c6da' if st.get_option('theme.base') == 'dark' else ''}; "
                         f"color: #006064 {'color: #e0f7fa' if st.get_option('theme.base') == 'dark' else ''}; "
                         f"font-size: 1rem; box-shadow: 0 4px 12px rgba(0, 96, 100, 0.1); "
-                        f"margin-top: 1rem; max-height: 250px; overflow-y: auto; "
+                        f"margin-top: 1rem; max-height: 400px; "
                         f"font-family: Poppins, sans-serif;'>"
                     )
                     for i, ctx in enumerate(result["context"], 1):
@@ -86,7 +86,7 @@ with tab1:
                             f"border-radius: 5px;'><strong>Chunk {i}:</strong> {ctx.replace('\n', '<br>')}</p>"
                         )
                     context_html += "</div>"
-                    html(context_html, height=250)
+                    html(context_html, height=400)
 
                 # Collapsible Metadata with Inline Styling
                 with st.expander("Metadata", expanded=True):
